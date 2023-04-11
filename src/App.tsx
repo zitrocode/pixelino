@@ -1,23 +1,29 @@
-import React, { useState } from 'react';
-import { GlobalStyle } from './styles';
-import { Button } from './components/Button';
-
-const api = window.electron;
+import React from 'react';
+import { ThemeProvider } from 'styled-components';
+import { useTheme } from './hooks/useTheme';
+import { GlobalStyle } from './styles/globalStyles';
+import { Navbar } from './components/Navbar/Navbar';
+import { Button } from './components/Button/Button.style';
 
 const App: React.FC = () => {
-  const [count, setCount] = useState(0);
-
-  const handleCounter = (): void => {
-    setCount(count + 1);
-    api.send('counter', { message: `Yout count: ${count}` });
-  };
+  const { config, toggleTheme } = useTheme();
+  const [activeTool, setActiveTool] = React.useState('select');
 
   return (
-    <>
+    <ThemeProvider theme={config}>
       <GlobalStyle />
-      <h1>Welcome to Pixelino!</h1>
-      <Button action={handleCounter} text={`Increment: ${count}`} />
-    </>
+      <Navbar changeTool={setActiveTool} currentTool={activeTool} />
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: 'calc(100vh - 40px)'
+        }}
+      >
+        <Button onClick={toggleTheme}>Toggle Theme</Button>
+      </div>
+    </ThemeProvider>
   );
 };
 

@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import os from 'os';
 import path from 'path';
 
@@ -14,8 +14,10 @@ if (!app.requestSingleInstanceLock()) {
   process.exit(0);
 }
 
+let mainWindow: BrowserWindow;
+
 const createWindows = async () => {
-  const win = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     title: 'Pixelino',
     icon: path.resolve(DIST, 'favicon.svg'),
     minWidth: 800,
@@ -26,14 +28,15 @@ const createWindows = async () => {
     }
   });
 
+  mainWindow.removeMenu();
+
   if (isDev) {
-    win.loadURL(url);
-    win.webContents.openDevTools({ mode: 'detach' });
+    mainWindow.loadURL(url);
+    mainWindow.webContents.openDevTools({ mode: 'detach' });
     return;
   }
 
-  win.removeMenu();
-  win.loadFile(path.join(DIST, 'index.html'));
+  mainWindow.loadFile(path.join(DIST, 'index.html'));
 };
 
 app.whenReady().then(createWindows);
@@ -49,8 +52,4 @@ app.on('activate', () => {
   }
 
   createWindows();
-});
-
-ipcMain.on('counter', (event, data) => {
-  console.log(data.message);
 });
